@@ -2,7 +2,8 @@ module Main exposing (Model, Msg(..), init, initialModel, main, subscriptions, u
 
 import Browser
 import Counter
-import Element exposing (el, layout)
+import Element exposing (centerX, column, el, layout, row)
+import Gallery
 import Html exposing (Html)
 import Json.Encode exposing (Value)
 
@@ -12,12 +13,16 @@ import Json.Encode exposing (Value)
 
 
 type alias Model =
-    { counterModel : Counter.Model }
+    { counterModel : Counter.Model
+    , galleryModel : Gallery.Model
+    }
 
 
 initialModel : Model
 initialModel =
-    { counterModel = Counter.initialModel }
+    { counterModel = Counter.initialModel
+    , galleryModel = Gallery.initialModel
+    }
 
 
 init : () -> ( Model, Cmd Msg )
@@ -32,7 +37,8 @@ init _ =
 
 
 type Msg
-    = WidgetMsg Counter.Msg
+    = CounterMsg Counter.Msg
+    | GalleryMsg Gallery.Msg
 
 
 
@@ -42,17 +48,30 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        WidgetMsg subMsg ->
+        CounterMsg subMsg ->
             let
-                ( updatedWidgetModel, widgetCmd ) =
+                ( updatedCounterModel, counterCmd ) =
                     model.counterModel
                         |> Counter.update subMsg
             in
             ( { model
-                | counterModel = updatedWidgetModel
+                | counterModel = updatedCounterModel
               }
-            , widgetCmd
-                |> Cmd.map WidgetMsg
+            , counterCmd
+                |> Cmd.map CounterMsg
+            )
+
+        GalleryMsg subMsg ->
+            let
+                ( updatedGalleryModel, galleryCmd ) =
+                    model.galleryModel
+                        |> Gallery.update subMsg
+            in
+            ( { model
+                | galleryModel = updatedGalleryModel
+              }
+            , galleryCmd
+                |> Cmd.map GalleryMsg
             )
 
 
@@ -71,9 +90,21 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    model.counterModel
-        |> Counter.view
-        |> Element.map WidgetMsg
+    let
+        galleryView =
+            model.galleryModel
+                |> Gallery.view
+                |> Element.map GalleryMsg
+                |> el [ centerX ]
+
+        counterView =
+            model.counterModel
+                |> Counter.view
+                |> Element.map CounterMsg
+                |> el [ centerX ]
+    in
+    [ counterView, galleryView ]
+        |> column [ centerX ]
         |> layout []
 
 
