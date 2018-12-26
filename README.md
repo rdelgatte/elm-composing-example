@@ -8,6 +8,11 @@ In a single Main module, it refers to an outside counter module so we can intera
 File `Counter.elm`:
 This is a basic standalone module which exposes a counter (with increment / decrement buttons)
 
+File `Gallery.elm`:
+This is a standalone module which exposes a images gallery:
+- With a random generate button 
+- With a selected image 
+
 File `Main.elm`: 
 This main module refers to counter module so it can render an allow interactions with it.
 
@@ -21,9 +26,14 @@ Main.elm
         -- Counter.Model
         -- Counter.Msg
         -- Counter.View
+    
+    | Gallery.elm 
+        -- Gallery.Model
+        -- Gallery.Msg
+        -- Gallery.View
 ```
 
-`Counter.elm` can be considered here as a sub-element of `Main.elm` 
+`Counter.elm` and `Gallery.elm` can be considered here as sub-elements of `Main.elm` 
 
 
 ### MacOS
